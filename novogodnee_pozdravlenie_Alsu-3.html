@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>С Новым годом, Алсу!</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; overflow-x: hidden;
+    font-family: Georgia, "Times New Roman", serif; color: #fff8e8;
+    background: radial-gradient(ellipse at 50% 15%, #244f70 0%, #102d49 42%, #071827 100%);
+    display: grid; place-items: center; padding: 28px 16px;
+  }
+  .glow { position: fixed; width: 320px; height: 320px; border-radius: 50%; filter: blur(70px); opacity: .22; pointer-events:none; }
+  .glow.one { background:#e7b85b; top:-140px; left:-100px; }
+  .glow.two { background:#4c9eaa; bottom:-150px; right:-100px; }
+  .card {
+    width: min(720px, 100%); position: relative; text-align:center;
+    padding: clamp(28px, 7vw, 58px) clamp(20px, 6vw, 54px);
+    border: 1px solid rgba(255,226,164,.55); border-radius: 28px;
+    background: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.045));
+    box-shadow: 0 22px 70px rgba(0,0,0,.35), inset 0 0 35px rgba(255,255,255,.035);
+    backdrop-filter: blur(8px);
+  }
+  .garland { font-size: clamp(20px, 5vw, 34px); letter-spacing: .18em; color:#f5cf79; text-shadow:0 0 15px #f5cf79; }
+  .eyebrow { margin: 18px 0 8px; color:#f4d99a; letter-spacing:.22em; text-transform:uppercase; font: 12px Arial,sans-serif; }
+  h1 { margin: 8px 0 12px; font-size: clamp(42px, 10vw, 76px); line-height:1.02; color:#fff1c9; text-shadow:0 4px 22px rgba(245,190,91,.35); }
+  .name { color:#f4c86f; }
+  .tree { font-size: clamp(70px, 16vw, 112px); margin: 14px 0 4px; filter: drop-shadow(0 0 18px rgba(255,211,116,.3)); }
+  .intro { max-width: 530px; margin: 0 auto; font-size: clamp(17px, 3.7vw, 21px); line-height:1.65; color:#f8f0df; }
+  button {
+    margin-top: 28px; border:0; border-radius:999px; padding:15px 27px;
+    background:linear-gradient(135deg,#f6d98e,#d9a94f); color:#273449;
+    font: bold 16px Arial,sans-serif; cursor:pointer; box-shadow:0 8px 25px rgba(0,0,0,.25);
+    transition: transform .2s, box-shadow .2s;
+  }
+  button:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,0,0,.32); }
+  #wish { display:none; max-width:540px; margin:24px auto 0; padding:20px 18px; border-top:1px solid rgba(245,207,121,.5); color:#fff4d8; font-size:19px; line-height:1.7; animation: appear .7s ease both; }
+  #wish.show { display:block; }
+  .signature { margin-top:22px; color:#f4d99a; font-style:italic; font-size:17px; }
+  .final-love { display:none; margin:25px auto 0; color:#ffd782; font-size:clamp(27px, 6vw, 42px); text-shadow:0 0 18px rgba(255,190,90,.65); animation:appear .9s ease both; }
+  .final-love.show { display:block; }
+  .music-button { margin:12px 0 0; padding:11px 20px; background:rgba(255,255,255,.12); color:#fff3d6; border:1px solid rgba(255,226,164,.45); box-shadow:none; font-weight:normal; }
+  #fireworks { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:5; }
+  .footer { margin-top:30px; color:rgba(255,248,232,.55); font:11px Arial,sans-serif; letter-spacing:.12em; }
+  .snow { position:fixed; top:-12px; color:#fff; opacity:.8; user-select:none; pointer-events:none; animation: fall linear infinite; text-shadow:0 0 8px #fff; }
+  @keyframes fall { to { transform:translateY(110vh) translateX(35px) rotate(360deg); } }
+  @keyframes appear { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .snow { animation:none; display:none; } * { transition:none !important; } }
+</style>
+</head>
+<body>\n<canvas id="fireworks"></canvas>
+<div class="glow one"></div><div class="glow two"></div>
+<main class="card">
+  <div class="garland">✦ ✧ ✦ ✧ ✦</div>
+  <p class="eyebrow">Праздничное поздравление</p>
+  <h1>С Новым<br>годом, <span class="name">Алсу!</span></h1>
+  <div class="tree" aria-hidden="true">🎄</div>
+  <p class="intro">Пусть эта волшебная ночь принесёт много радости, улыбок и чудес, а наступающий год станет по-настоящему счастливым!</p>
+  <button id="openWish" type="button">С Новым годом! 🎉</button>
+  <div id="wish" aria-live="polite">
+    Алсу, желаю тебе крепкого здоровья, исполнения самых заветных желаний, верных друзей и побольше незабываемых моментов. Пусть каждый день нового года будет наполнен теплом, добром и приятными сюрпризами! 💛
+    <div class="signature">С самыми тёплыми пожеланиями ❤️</div>
+    <div class="final-love" id="finalLove">Люблю тебя, Алсу! ❤️</div>
+  </div>
+  <button class="music-button" id="musicButton" type="button">♫ Включить праздничную мелодию</button>
+  <div>
+    <button class="music-button" id="telegramButton" type="button">Отправить в Telegram</button>
+    <button class="music-button" id="copyButton" type="button">Скопировать ссылку</button>
+  </div>
+  <div class="footer">СЧАСТЬЯ • ЧУДЕС • ВОЛШЕБСТВА</div>
+</main>
+<script>
+  const button = document.getElementById('openWish');
+  const wish = document.getElementById('wish');
+
+  const telegramButton = document.getElementById('telegramButton');
+  const copyButton = document.getElementById('copyButton');
+  function getShareUrl() {
+    return window.location.href;
+  }
+  telegramButton.addEventListener('click', () => {
+    const url = getShareUrl();
+    const message = 'Алсу, для тебя новогоднее поздравление! 🎄❤️';
+    const shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) +
+                     '&text=' + encodeURIComponent(message);
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+  });
+  copyButton.addEventListener('click', async () => {
+    const url = getShareUrl();
+    try {
+      await navigator.clipboard.writeText(url);
+      copyButton.textContent = 'Ссылка скопирована! ✓';
+    } catch (error) {
+      copyButton.textContent = 'Открой сайт по опубликованной ссылке';
+    }
+  });
+  const finalLove = document.getElementById('finalLove');
+  button.addEventListener('click', () => {
+    wish.classList.toggle('show');
+    finalLove.classList.toggle('show', wish.classList.contains('show'));
+    button.textContent = wish.classList.contains('show') ? 'Скрыть поздравление' : 'С Новым годом! 🎉';
+    if (wish.classList.contains('show')) launchFireworks();
+  });
+
+  // A gentle original holiday tune made with browser audio — no external files needed.
+  let audioContext, musicTimer, noteIndex = 0;
+  const musicButton = document.getElementById('musicButton');
+  const melody = [523.25, 659.25, 783.99, 659.25, 587.33, 698.46, 880, 698.46,
+                  523.25, 659.25, 783.99, 1046.5, 880, 783.99, 659.25, 587.33];
+  function playNote(freq) {
+    if (!audioContext) return;
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.07, audioContext.currentTime + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.42);
+    osc.connect(gain); gain.connect(audioContext.destination);
+    osc.start(); osc.stop(audioContext.currentTime + 0.45);
+  }
+  musicButton.addEventListener('click', async () => {
+    if (musicTimer) {
+      clearInterval(musicTimer); musicTimer = null;
+      musicButton.textContent = '♫ Включить праздничную мелодию';
+      return;
+    }
+    audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+    await audioContext.resume();
+    playNote(melody[noteIndex++ % melody.length]);
+    musicTimer = setInterval(() => playNote(melody[noteIndex++ % melody.length]), 480);
+    musicButton.textContent = '♫ Выключить мелодию';
+  });
+
+  // Colourful decorative fireworks.
+  const canvas = document.getElementById('fireworks');
+  const ctx = canvas.getContext('2d');
+  let particles = [], fireworksActive = false;
+  function resizeCanvas() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = innerWidth * dpr; canvas.height = innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resizeCanvas); resizeCanvas();
+  function burst(x, y) {
+    const hue = Math.floor(Math.random() * 360);
+    for (let i = 0; i < 65; i++) {
+      const angle = Math.PI * 2 * i / 65;
+      const speed = 1.2 + Math.random() * 3.2;
+      particles.push({x, y, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed,
+                      life:55 + Math.random()*25, hue, size:1.5 + Math.random()*2});
+    }
+  }
+  function animateFireworks() {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    particles = particles.filter(p => p.life > 0);
+    for (const p of particles) {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.025; p.vx *= 0.99; p.life--;
+      ctx.globalAlpha = Math.min(1, p.life / 25);
+      ctx.fillStyle = `hsl(${p.hue}, 100%, 70%)`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (fireworksActive || particles.length) requestAnimationFrame(animateFireworks);
+  }
+  function launchFireworks() {
+    fireworksActive = true;
+    if (!particles.length) requestAnimationFrame(animateFireworks);
+    let count = 0;
+    const showBurst = () => {
+      burst(innerWidth * (0.18 + Math.random()*0.64), innerHeight * (0.12 + Math.random()*0.48));
+      count++;
+      if (count < 9) setTimeout(showBurst, 420);
+      else setTimeout(() => { fireworksActive = false; }, 1200);
+    };
+    showBurst();
+  }
+  for (let i = 0; i < 42; i++) {
+    const flake = document.createElement('span');
+    flake.className = 'snow';
+    flake.textContent = Math.random() > .5 ? '❄' : '•';
+    flake.style.left = Math.random() * 100 + 'vw';
+    flake.style.fontSize = (8 + Math.random() * 15) + 'px';
+    flake.style.animationDuration = (7 + Math.random() * 12) + 's';
+    flake.style.animationDelay = (-Math.random() * 18) + 's';
+    document.body.appendChild(flake);
+  }
+</script>
+</body>
+</html>
